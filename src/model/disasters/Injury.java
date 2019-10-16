@@ -4,10 +4,9 @@ import model.people.Citizen;
 
 public class Injury extends Disaster {
 
-	public Injury(int startCycle, Citizen target) {
-
-		super(startCycle, target);
-
+	public Injury(int cycle, Citizen target) {
+		super(cycle, target);
 	}
+	
 
 }

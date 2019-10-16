@@ -1,15 +1,14 @@
 package model.infrastructure;
 
-import java.util.ArrayList;
-
-import model.disasters.Disaster;
-import model.people.Citizen;
 import simulation.Address;
 import simulation.Rescuable;
 import simulation.Simulatable;
+import java.util.ArrayList;
+import model.disasters.Disaster;
+import model.people.Citizen;
 
-public class ResidentialBuilding implements Rescuable, Simulatable {
-
+public class ResidentialBuilding implements Simulatable, Rescuable {
+	
 	private Address location;
 	private int structuralIntegrity;
 	private int fireDamage;
@@ -17,13 +16,14 @@ public class ResidentialBuilding implements Rescuable, Simulatable {
 	private int foundationDamage;
 	private ArrayList<Citizen> occupants;
 	private Disaster disaster;
-
+	
 	public ResidentialBuilding(Address location) {
-
 		this.location = location;
 		this.structuralIntegrity = 100;
+		this.fireDamage = 0;
+		this.gasLevel = 0;
+		this.foundationDamage = 0;
 		occupants = new ArrayList<Citizen>();
-
 	}
 
 	public int getStructuralIntegrity() {
@@ -69,5 +69,5 @@ public class ResidentialBuilding implements Rescuable, Simulatable {
 	public Disaster getDisaster() {
 		return disaster;
 	}
-
+	
 }

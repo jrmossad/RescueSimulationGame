@@ -4,10 +4,8 @@ import model.people.Citizen;
 
 public class Infection extends Disaster {
 
-	public Infection(int startCycle, Citizen target) {
-
-		super(startCycle, target);
-
+	public Infection(int cycle, Citizen target) {
+		super(cycle, target);
 	}
-
+	
 }

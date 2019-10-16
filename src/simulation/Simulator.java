@@ -1,7 +1,5 @@
 package simulation;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.ArrayList;
 
 import model.disasters.Disaster;
@@ -17,9 +15,12 @@ import model.units.Evacuator;
 import model.units.FireTruck;
 import model.units.GasControlUnit;
 import model.units.Unit;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Simulator {
-
+	
 	private int currentCycle;
 	private ArrayList<ResidentialBuilding> buildings;
 	private ArrayList<Citizen> citizens;
@@ -27,185 +28,137 @@ public class Simulator {
 	private ArrayList<Disaster> plannedDisasters;
 	private ArrayList<Disaster> executedDisasters;
 	private Address[][] world;
-
-	public Simulator() throws Exception {
-
+	
+	public Simulator() throws IOException {
+		world = new Address[10][10];
+		intialize();
 		buildings = new ArrayList<ResidentialBuilding>();
 		citizens = new ArrayList<Citizen>();
-		emergencyUnits = new ArrayList<Unit>();
 		plannedDisasters = new ArrayList<Disaster>();
 		executedDisasters = new ArrayList<Disaster>();
-
-		world = new Address[10][10];
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++) {
-				world[i][j] = new Address(i, j);
-			}
-		}
-
-		loadUnits("units.csv");
+		emergencyUnits = new ArrayList<Unit>();
 		loadBuildings("buildings.csv");
 		loadCitizens("citizens.csv");
+		loadUnits("units.csv");
 		loadDisasters("disasters.csv");
-
-		for (int i = 0; i < buildings.size(); i++) {
-
-			ResidentialBuilding building = buildings.get(i);
-			for (int j = 0; j < citizens.size(); j++) {
-
-				Citizen citizen = citizens.get(j);
-				if (citizen.getLocation() == building.getLocation())
-					building.getOccupants().add(citizen);
-
+	}
+	
+	private void intialize() {
+		for(int i = 0; i < world.length; i++)
+			for(int j = 0;j < world[i].length; j++)
+				world [i][j] = new Address(i, j);
+	}
+	
+	private void loadUnits(String filePath)throws IOException {
+		String currentLine = "";
+		FileReader fileReader= new FileReader(filePath);
+		BufferedReader br = new BufferedReader(fileReader);
+		while ((currentLine = br.readLine()) != null) {		
+			String [] result= currentLine.split(",");
+			switch(result[0]){
+				case "AMB": emergencyUnits.add(new Ambulance(result[1],
+						world[0][0], Integer.parseInt(result[2])));
+							break;
+							
+				case "DCU": emergencyUnits.add(new DiseaseControlUnit(result[1],
+						world[0][0], Integer.parseInt(result[2])));
+							break;
+							
+				case "EVC": emergencyUnits.add(new Evacuator(result[1],
+						world[0][0], Integer.parseInt(result[2]), Integer.parseInt(result[3])));
+							break;
+							
+				case "FTK": emergencyUnits.add(new FireTruck(result[1],
+						world[0][0], Integer.parseInt(result[2])));
+							break;
+							
+				case "GCU": emergencyUnits.add(new GasControlUnit(result[1],
+						world[0][0], Integer.parseInt(result[2])));
+							break;	
 			}
 		}
+		br.close();	
 	}
-
-	private void loadUnits(String path) throws Exception {
-
-		BufferedReader br = new BufferedReader(new FileReader(path));
-		String line = br.readLine();
-
-		while (line != null) {
-
-			String[] info = line.split(",");
-			String id = info[1];
-			int steps = Integer.parseInt(info[2]);
-
-			switch (info[0]) {
-
-			case "AMB":
-				emergencyUnits.add(new Ambulance(id, world[0][0], steps));
-				break;
-
-			case "DCU":
-				emergencyUnits.add(new DiseaseControlUnit(id, world[0][0], steps));
-				break;
-
-			case "EVC":
-				emergencyUnits.add(new Evacuator(id, world[0][0], steps, Integer.parseInt(info[3])));
-				break;
-
-			case "FTK":
-				emergencyUnits.add(new FireTruck(id, world[0][0], steps));
-				break;
-
-			case "GCU":
-				emergencyUnits.add(new GasControlUnit(id, world[0][0], steps));
-				break;
-
-			}
-
-			line = br.readLine();
-		}
-
-		br.close();
-	}
-
-	private void loadBuildings(String path) throws Exception {
-
-		BufferedReader br = new BufferedReader(new FileReader(path));
-		String line = br.readLine();
-
-		while (line != null) {
-
-			String[] info = line.split(",");
-			int x = Integer.parseInt(info[0]);
-			int y = Integer.parseInt(info[1]);
-
-			buildings.add(new ResidentialBuilding(world[x][y]));
-
-			line = br.readLine();
-
+	
+	private void loadBuildings(String filePath) throws IOException {
+		String currentLine = "";
+		FileReader fileReader = new FileReader(filePath);
+		BufferedReader br = new BufferedReader(fileReader);
+		while ((currentLine = br.readLine()) != null) {		
+			String [] result = currentLine.split(",");
+			 buildings.add(new ResidentialBuilding(
+					 world[Integer.parseInt(result[0])][Integer.parseInt(result[1])]));				
 		}
 		br.close();
 	}
-
-	private void loadCitizens(String path) throws Exception {
-
-		BufferedReader br = new BufferedReader(new FileReader(path));
-		String line = br.readLine();
-
-		while (line != null) {
-
-			String[] info = line.split(",");
-			int x = Integer.parseInt(info[0]);
-			int y = Integer.parseInt(info[1]);
-			String id = info[2];
-			String name = info[3];
-			int age = Integer.parseInt(info[4]);
-
-			citizens.add(new Citizen(world[x][y], id, name, age));
-
-			line = br.readLine();
-
+	
+	private void loadCitizens(String filePath) throws IOException {
+		String currentLine = "";
+		FileReader fileReader = new FileReader(filePath);
+		BufferedReader br = new BufferedReader(fileReader);
+		while ((currentLine = br.readLine()) != null) {		
+			String [] result = currentLine.split(",");
+			Citizen citizen = new Citizen(
+					world[Integer.parseInt(result[0])][Integer.parseInt(result[1])],
+					result[2], result[3], Integer.parseInt(result[4]));
+			citizens.add(citizen);	
+			 ResidentialBuilding building = 
+					 getBuilding(Integer.parseInt(result[0]), Integer.parseInt(result[1]));
+			 if(building != null)
+				 building.getOccupants().add(citizen);
 		}
 		br.close();
 	}
-
-	private void loadDisasters(String path) throws Exception {
-
-		BufferedReader br = new BufferedReader(new FileReader(path));
-		String line = br.readLine();
-
-		while (line != null) {
-
-			String[] info = line.split(",");
-			int startCycle = Integer.parseInt(info[0]);
-			ResidentialBuilding building = null;
-			Citizen citizen = null;
-
-			if (info.length == 3)
-				citizen = getCitizenByID(info[2]);
-			else {
-
-				int x = Integer.parseInt(info[2]);
-				int y = Integer.parseInt(info[3]);
-				building = getBuildingByLocation(world[x][y]);
-
+	
+	private void loadDisasters(String filePath) throws IOException {
+		String currentLine = "";
+		FileReader fileReader = new FileReader(filePath);
+		BufferedReader br = new BufferedReader(fileReader);
+		while ((currentLine = br.readLine()) != null) {		
+			String [] result = currentLine.split(",");
+			switch(result[1]) {
+				case "FIR": plannedDisasters.add(new Fire(Integer.parseInt(result[0]),
+									getBuilding(Integer.parseInt(result[2]),
+											Integer.parseInt(result[3]))));
+							break;
+							
+				case "INJ": plannedDisasters.add(new Injury(Integer.parseInt(result[0]),
+							getCitizen(result[2])));
+							break;
+							
+				case "INF": plannedDisasters.add(new Infection(Integer.parseInt(result[0]),
+						getCitizen(result[2])));
+							break;
+							
+				case "GLK": plannedDisasters.add(new GasLeak(Integer.parseInt(result[0]),
+						getBuilding(Integer.parseInt(result[2]),
+						Integer.parseInt(result[3]))));
+							break;
 			}
-
-			switch (info[1]) {
-
-			case "INJ":
-				plannedDisasters.add(new Injury(startCycle, citizen));
-				break;
-
-			case "INF":
-				plannedDisasters.add(new Infection(startCycle, citizen));
-				break;
-
-			case "FIR":
-				plannedDisasters.add(new Fire(startCycle, building));
-				break;
-
-			case "GLK":
-				plannedDisasters.add(new GasLeak(startCycle, building));
-				break;
-			}
-
-			line = br.readLine();
 		}
 		br.close();
 	}
-
-	private Citizen getCitizenByID(String id) {
-
-		for (int i = 0; i < citizens.size(); i++) {
-			if (citizens.get(i).getNationalID().equals(id))
-				return citizens.get(i);
+	
+	private ResidentialBuilding getBuilding(int x, int y) {
+		ResidentialBuilding building = null;
+		for(int i = 0;i < buildings.size(); i++) {
+			building = (ResidentialBuilding) buildings.get(i);
+			Address location = building.getLocation();
+			if(location.getX() == x && location.getY() == y)
+				return building;
 		}
-
-		return null;
+		return building;
 	}
-
-	private ResidentialBuilding getBuildingByLocation(Address location) {
-
-		for (int i = 0; i < buildings.size(); i++) {
-			if (buildings.get(i).getLocation() == location)
-				return buildings.get(i);
+	
+	private Citizen getCitizen(String id) {
+		Citizen citizen = null;
+		for(int i = 0;i < citizens.size(); i++) {
+			citizen = (Citizen) citizens.get(i);
+			String l = citizen.getNationalID();
+			if(l.equals(id))
+				return citizen;
 		}
-
-		return null;
+		return citizen;
 	}
+	
 }

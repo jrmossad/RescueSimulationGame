@@ -4,10 +4,8 @@ import simulation.Address;
 
 public class Ambulance extends MedicalUnit {
 
-	public Ambulance(String unitID, Address location, int stepsPerCycle) {
-
-		super(unitID, location, stepsPerCycle);
-
+	public Ambulance(String id, Address location, int stepsPerCycle) {
+		super(id, location, stepsPerCycle);
 	}
 
 }

@@ -1,15 +1,13 @@
 package simulation;
 
 public class Address {
-
+	
 	private int x;
 	private int y;
-
+	
 	public Address(int x, int y) {
-
 		this.x = x;
-		this.y = y;
-
+		this.y= y;
 	}
 
 	public int getX() {
@@ -18,6 +16,6 @@ public class Address {
 
 	public int getY() {
 		return y;
-	}
+	}	
 
 }

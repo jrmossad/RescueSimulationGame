@@ -4,16 +4,15 @@ import simulation.Rescuable;
 import simulation.Simulatable;
 
 public abstract class Disaster implements Simulatable {
-
+	
 	private int startCycle;
 	private Rescuable target;
 	private boolean active;
 
 	public Disaster(int startCycle, Rescuable target) {
-
 		this.startCycle = startCycle;
 		this.target = target;
-
+		this.active = false;
 	}
 
 	public boolean isActive() {
@@ -31,5 +30,5 @@ public abstract class Disaster implements Simulatable {
 	public Rescuable getTarget() {
 		return target;
 	}
-
+	
 }
